@@ -3,6 +3,11 @@ import sys
 import networkx as nx
 
 
+class Node:
+    def __init__(self, id, area):
+        self.id = id
+        self.area = area
+
 
 
 
