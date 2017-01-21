@@ -40,7 +40,15 @@ WHITE = 255
 GREY = 128
 BLACK = 0
 
+for x in [0, height-1]:
+    for y in range(width):
+        if im_bw[x, y] == BLACK:
+            fill_color(im_bw, (x, y), WHITE)
 
+for y in [0, width-1]:
+    for x in range(height):
+        if im_bw[x, y] == BLACK:
+            fill_color(im_bw, (x, y), WHITE)
 
 graph = nx.Graph()
 id = 0
