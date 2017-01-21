@@ -8,11 +8,13 @@ def process(frame):
 
     return gray
 
-img = cv2.imread(sys.argv[1], cv2.IMREAD_COLOR)
+img = cv2.imread(sys.argv[1], 0)
+ret,thresh1 = cv2.threshold(img,180,255,cv2.THRESH_BINARY)
 
-out = process(img)
 
-cv2.imshow('frame',out)
+#out = process(img)
+
+cv2.imshow('frame', thresh1)
 
 
 # Wait for quit key
