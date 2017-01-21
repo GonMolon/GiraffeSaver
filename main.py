@@ -42,7 +42,15 @@ BLACK = 0
 
 
 
+graph = nx.Graph()
+id = 0
 
+for x in range(height):
+    for y in range(width):
+        if im_bw[x, y] == BLACK:
+            area = fill_color(im_bw, (x, y), GREY)
+            graph.add_node(Node(id, area))
+            id += 1
 
 
 cv2.imshow('pattern', im_bw)
