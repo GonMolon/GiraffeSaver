@@ -9,6 +9,14 @@ class Node:
         self.area = area
 
 
+def is_border(im, pixel):
+    (x, y) = pixel
+    for dx in range(-1, 2):
+        for dy in range(-1, 2):
+            if (dx != 0 or dy != 0) and (dx == 0 or dy == 0):
+                if im[x, y] == WHITE:
+                    return True
+    return False
 
 
 def fill_color(im, pixel, color):
