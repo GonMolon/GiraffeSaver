@@ -15,3 +15,4 @@ class Node:
 
     def get_ratios(self, other):
         return [self.area / float(other.area), self.outline / float(other.outline)]
+
