@@ -1,13 +1,20 @@
 import cv2
 import sys
 import networkx as nx
+import math
 
 
 class Node:
-    def __init__(self, id, outline, area):
+    def __init__(self, id, pos, outline, area):
         self.id = id
+        self.pos = pos
         self.outline = outline
         self.area = area
+
+    def get_dist(self, other):
+        x1, y1 = self.pos
+        x2, y2 = other.pos
+        return math.sqrt(math.pow(x1 - x2, 2) + math.pow(y1 - y2, 2))
 
 
 class Box:
@@ -33,6 +40,9 @@ class Box:
                 self.maxX = x
             if self.maxY < y:
                 self.maxY = y
+
+    def get_pos(self):
+        return (self.maxY + self.minX) / 2, (self.maxY + self.minY) / 2
 
 
 def is_border(im, pixel):
@@ -108,9 +118,15 @@ for x in range(height):
         if im_bw[x, y] == BLACK and is_border(im_bw, (x, y)):
             box, outline = fill_color(im_bw, (x, y), GREY, only_border=True, compute_box=True)
             area = fill_color(im_bw, (x, y), GREY_MARKED)
-            graph.add_node(Node(id, outline, area))
-            print("New node found", id, "With area", area, "With outline", outline, "With box", box)
+            node = Node(id, box.get_pos(), outline, area)
+            graph.add_node(node)
+            print("New node found", node.id, "With area", node.area, "With outline", node.outline, "With pos", node.pos)
             id += 1
+
+for s in graph:
+    for t in graph:
+        if s.id != t.id:
+            graph.add_edge(s, t, weight=s.get_dist(t))
 
 cv2.imwrite("./output.png", im_bw)
 cv2.imshow("output", im_bw)
