@@ -4,24 +4,28 @@ import networkx as nx
 
 
 class Node:
-    def __init__(self, id, area):
+    def __init__(self, id, outline, area):
         self.id = id
+        self.outline = outline
         self.area = area
+
 
 
 def is_border(im, pixel):
     (x, y) = pixel
     for dx in range(-1, 2):
         for dy in range(-1, 2):
-            if (dx != 0 or dy != 0) and (dx == 0 or dy == 0):
-                if im[x, y] == WHITE:
+            x1 = x + dx
+            y1 = y + dy
+            if 0 <= x1 < height and 0 <= y1 < width:
+                if im[x1, y1] == WHITE:
                     return True
     return False
 
 
-def fill_color(im, pixel, color):
+def fill_color(im, pixel, color, only_border=False):
     total_pixels = 0
-    org = im[pixel]
+    im[pixel] = color
     queue = [pixel]
 
     while queue:
@@ -34,11 +38,11 @@ def fill_color(im, pixel, color):
                     x1 = x + dx
                     y1 = y + dy
                     if 0 <= x1 < height and 0 <= y1 < width:
-                        if im[x1, y1] == org and is_border(im, (x1, y1)):
+                        if (im[x1, y1] != WHITE and im[x1, y1] != color) and \
+                                (not only_border or is_border(im, (x1, y1))):
                             im[x1, y1] = color
                             queue.append((x1, y1))
-
-    return total_pixels
+    return (total_pixels)
 
 
 img = cv2.imread(sys.argv[1], 0)
@@ -48,33 +52,37 @@ height, width = img.shape
 print(height)
 print(width)
 
-
 WHITE = 255
 GREY = 128
+GREY_MARKED = 50
 BLACK = 0
 
-for x in [0, height-1]:
+for x in [0, height - 1]:
     for y in range(width):
         if im_bw[x, y] == BLACK:
             fill_color(im_bw, (x, y), WHITE)
+            print("Node filtered")
 
-for y in [0, width-1]:
+for y in [0, width - 1]:
     for x in range(height):
         if im_bw[x, y] == BLACK:
             fill_color(im_bw, (x, y), WHITE)
+            print("Node filtered")
 
 graph = nx.Graph()
 id = 0
 
 for x in range(height):
     for y in range(width):
-        if im_bw[x, y] == BLACK:
-            area = fill_color(im_bw, (x, y), GREY)
-            graph.add_node(Node(id, area))
+        if im_bw[x, y] == BLACK and is_border(im_bw, (x, y)):
+            outline = fill_color(im_bw, (x, y), GREY, only_border=True)
+            area = fill_color(im_bw, (x, y), GREY_MARKED)
+            graph.add_node(Node(id, outline, area))
+            print("New node found", id, "With area", area, "And outline", outline)
             id += 1
 
-
-cv2.imshow('pattern', im_bw)
+cv2.imwrite("./output.png", im_bw)
+cv2.imshow("output", im_bw)
 
 # Wait for quit key
 while True:
