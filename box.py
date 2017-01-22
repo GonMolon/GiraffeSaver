@@ -23,4 +23,4 @@ class Box:
                 self.maxY = y
 
     def get_pos(self):
-        return (self.maxY + self.minX) / 2, (self.maxY + self.minY) / 2
+        return (self.maxX + self.minX) / 2, (self.maxY + self.minY) / 2

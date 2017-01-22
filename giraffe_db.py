@@ -1,6 +1,7 @@
 import sys
 import pickle
 import io
+from Queue import PriorityQueue
 from os import listdir
 from os.path import isfile, join
 from graph_generator import generate_graph
@@ -22,8 +23,9 @@ def search_giraffe(path):
         file.close()
     compare_graphs(graph_list[0], graph_list[0])
 
+
 def main():
-    search_giraffe(sys.argv[1])
+    store_giraffe(sys.argv[1], "pepa")
 
 
 if __name__ == "__main__":

@@ -1,9 +1,10 @@
+from Queue import PriorityQueue
+
 import cv2
 import networkx as nx
 
 from box import Box
 from node import Node
-
 
 WHITE = 255
 GREY = 128
@@ -82,11 +83,31 @@ def add_nodes(graph):
                 last_id += 1
 
 
+MAX_NEIGHBOURS = 6
+
+
 def add_edges(graph):
     for s in graph:
+        queue = PriorityQueue()
         for t in graph:
             if s.id != t.id:
-                graph.add_edge(s, t, weight=s.get_dist(t))
+                dist = s.get_dist(t)
+                if queue.qsize() >= MAX_NEIGHBOURS and queue.queue[0][0] > dist:
+                    queue.get()
+                if queue.qsize() < MAX_NEIGHBOURS:
+                    queue.put((dist, t))
+        while not queue.empty():
+            t = queue.get()[1]
+            graph.add_edge(s, t, weight=s.get_dist(t))
+
+
+def show_image():
+    cv2.imshow('graph', img)
+    while True:
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cv2.destroyAllWindows()
+
 
 img = None
 height = width = None
@@ -104,5 +125,16 @@ def generate_graph(img_path):
 
     add_nodes(graph)
     add_edges(graph)
+
+    for n in graph.nodes():
+        img = cv2.circle(img, n.pos[::-1], 10, 150, 3)
+
+    for e in graph.edges(data=True):
+        a = e[0]
+        b = e[1]
+        weight = e[2]["weight"]
+        img = cv2.line(img, a.pos[::-1], b.pos[::-1], 150, 1)
+
+    show_image()
 
     return graph
