@@ -23,8 +23,11 @@ def search_giraffe(path):
     for file in files:
         file.close()
     graph = generate_graph(path)
+    output = []
     for g in graph_list:
-        print("Similarity with " + g.name, compare_graphs(graph, g))
+        output.append("Similarity with " + g.name + " = " + str(compare_graphs(graph, g)))
+        print(output[-1])
+    return output
 
 def main():
     path = sys.argv[1]
