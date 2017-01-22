@@ -136,6 +136,6 @@ def generate_graph(img_path):
     add_nodes(graph)
     add_edges(graph)
 
-    show_image(img_org, graph)
+    # show_image(img_org, graph)
 
     return graph

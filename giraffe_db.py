@@ -10,6 +10,7 @@ from graph_generator import generate_graph
 
 def store_giraffe(path, name):
     graph = generate_graph(path)
+    graph.name = name
     f = io.open("db/" + name, 'wb')
     pickle.dump(graph, f)
     f.close()
@@ -21,8 +22,9 @@ def search_giraffe(path):
     graph_list = [pickle.load(file) for file in files]
     for file in files:
         file.close()
-    compare_graphs(graph_list[0], graph_list[0])
-
+    graph = generate_graph(path)
+    for g in graph_list:
+        print("Similarity with " + g.name, compare_graphs(graph, g))
 
 def main():
     search_giraffe(sys.argv[1])

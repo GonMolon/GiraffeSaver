@@ -1,4 +1,7 @@
+import time
+
 from utils import RatioEvaluator
+
 
 act_level = 0
 max_level = -1
@@ -8,8 +11,13 @@ g1 = g2 = None
 available1 = available2 = None
 evaluator = None
 
+timeout = None
+
 
 def compare_nodes(act1, act2):
+    if time.time() > timeout:
+        return
+
     global act_level
     global max_level
 
@@ -17,7 +25,6 @@ def compare_nodes(act1, act2):
         return
 
     for n1 in act1:
-        print(act_level)
         if n1 not in available1:
             continue
         candidate = False
@@ -57,6 +64,8 @@ def compare_graphs(graph1, graph2):
     available1 = set(nodes1)
     available2 = set(nodes2)
 
+    global timeout
+    timeout = time.time() + 4
     compare_nodes(set(nodes1), set(nodes2))
 
-    print(max_level / float(max))
+    return max_level / float(max)
