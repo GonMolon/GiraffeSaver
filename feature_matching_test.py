@@ -3,32 +3,41 @@ import cv2
 from matplotlib import pyplot as plt
 import os
 
-MIN_MATCH_COUNT = 10
 IMG_BASEPATH = 'test_images'
 
-img1 = cv2.imread(os.path.join(IMG_BASEPATH, 'pattern_gus.png'), 0) # queryImage
-img2 = cv2.imread(os.path.join(IMG_BASEPATH, 'gus_photo_1.png'), 0) # trainImage
 
-# Initiate SIFT detector
-sift = cv2.xfeatures2d.SIFT_create()
+def compute_matches(path_obj, path_scene, threshold=12):
+    # Feature matching
+    img1 = cv2.imread(path_obj, 0)  # queryImage
+    img2 = cv2.imread(path_scene, 0)  # trainImage
 
-# find the keypoints and descriptors with SIFT
-kp1, des1 = sift.detectAndCompute(img1,None)
-kp2, des2 = sift.detectAndCompute(img2,None)
+    # Initiate ORB detector
+    orb = cv2.ORB_create(edgeThreshold=9)
+    # find the keypoints and descriptors with ORB
+    kp1, des1 = orb.detectAndCompute(img1, None)
+    kp2, des2 = orb.detectAndCompute(img2, None)
 
-FLANN_INDEX_KDTREE = 0
-index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
-search_params = dict(checks = 50)
+    # create BFMatcher object
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+    # Match descriptors.
+    matches = bf.match(des1, des2)
+    # Sort them in the order of their distance.
+    matches = sorted(matches, key=lambda x: x.distance)
 
-flann = cv2.FlannBasedMatcher(index_params, search_params)
+    # Draw first 10 matches.
+    img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], flags=2, outImg=8)
 
-matches = flann.knnMatch(des1,des2,k=2)
-print matches
-# store all the good matches as per Lowe's ratio test.
-good = []
-for m,n in matches:
-    if m.distance < 0.7*n.distance:
-        good.append(m)
+    return matches, img3
 
-print len(good)
-print good
+
+if __name__ == "__main__":
+    gus_patt_predict = os.path.join(IMG_BASEPATH, 'gus_pattern_predict.png')
+    gus_patt = os.path.join(IMG_BASEPATH, 'pattern_gus.png')
+
+    predict = gus_patt_predict
+    pattern = gus_patt
+
+    matches, img = compute_matches(predict, pattern)
+    print "We found %d matches!" % len(matches)
+
+    plt.imshow(img), plt.show()
