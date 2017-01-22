@@ -26,5 +26,3 @@ def test():
 
     # save the result
     cv2.imwrite('imgout.jpg', img)
-
-test()

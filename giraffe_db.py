@@ -27,8 +27,12 @@ def search_giraffe(path):
         print("Similarity with " + g.name, compare_graphs(graph, g))
 
 def main():
-    search_giraffe(sys.argv[1])
-
+    path = sys.argv[1]
+    if len(sys.argv) > 2:
+        name = sys.argv[2]
+        store_giraffe(path, name)
+    else:
+        search_giraffe(path)
 
 if __name__ == "__main__":
     main()
