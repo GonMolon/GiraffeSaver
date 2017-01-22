@@ -5,6 +5,7 @@ import networkx as nx
 
 from box import Box
 from node import Node
+from spots import spots
 
 WHITE = 255
 GREY = 128
@@ -111,12 +112,11 @@ def show_image(img, graph):
         weight = e[2]["weight"]
         img = cv2.line(img, a.pos[::-1], b.pos[::-1], 0, 2)
 
-    cv2.imshow('graph', img)
     cv2.imwrite("output.jpg", img)
-    while True:
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    cv2.destroyAllWindows()
+    # while True:
+    #     if cv2.waitKey(1) & 0xFF == ord('q'):
+    #         break
+    # cv2.destroyAllWindows()
 
 
 img = None
@@ -126,7 +126,8 @@ height = width = None
 def generate_graph(img_path):
     global img, height, width
     img_org = cv2.imread(img_path, 0)
-    ret, img = cv2.threshold(img_org, 180, 255, cv2.THRESH_BINARY)
+    img = spots(img_org)
+    #ret, img = cv2.threshold(img_org, 180, 255, cv2.THRESH_BINARY)
     height, width = img.shape
 
     filter_nodes()
@@ -136,6 +137,6 @@ def generate_graph(img_path):
     add_nodes(graph)
     add_edges(graph)
 
-    # show_image(img_org, graph)
+    show_image(img, graph)
 
     return graph
