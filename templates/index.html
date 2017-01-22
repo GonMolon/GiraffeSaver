@@ -1,16 +1,16 @@
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="areaselect/css/imgareaselect-default.css"/>
-    <script type="text/javascript" src="areaselect/scripts/jquery.min.js"></script>
-    <script type="text/javascript" src="areaselect/scripts/jquery.imgareaselect.pack.js"></script>
+    <link rel="stylesheet" type="text/css" href="../static/css/imgareaselect-default.css"/>
+    <script type="text/javascript" src="../static/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/scripts/jquery.imgareaselect.pack.js"></script>
 </head>
 <body>
 <label>Image File:</label><br/>
 
 <canvas id="canvas"></canvas>
 
-<form name="form" id="form" method=POST enctype=multipart/form-data action="{{ url_for('submit_image_to_study') }}">
-    <input type = "file" name = "file" />
+<form name="form" id="form" method=POST enctype=multipart/form-data action="{{ url_for('study_img') }}">
+    <input type = "file" id="imageLoader" name="file"/>
     <input id="obj" type="hidden" name="obj[]">
     <a href="javascript: submitform()">Submit</a>
 </form>

@@ -8,9 +8,11 @@ def ricard_si_ens_has_de_preguntar_preguntes_de_p3_ja_faig_flask():
 
 
 @app.route('/submit_image_to_study', methods=['POST'])
-def addRegion():
+def study_img():
+    print(request.form)
     print("I got it!")
     print(request.form['projectFilepath'])
+    return "ok"
 
 if __name__ == '__main__':
     app.run()
