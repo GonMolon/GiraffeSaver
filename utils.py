@@ -8,6 +8,8 @@ class RatioEvaluator:
         self.var = None
 
     def mean(self):
+        if len(self.ratios) == 0:
+            return 0
         return self.total / len(self.ratios)
 
     def variance(self):
@@ -23,8 +25,11 @@ class RatioEvaluator:
         return self.var < 0.1
 
     def rollback(self):
-        size = len(self.ratios)
         remove = self.ratios[-2:]
         self.total -= sum(remove)
         del self.ratios[-2:]
-        self.var = self.variance()
+        if len(self.ratios) != 0:
+            self.var = self.variance()
+        else:
+            self.total = 0.0
+            self.var = None
