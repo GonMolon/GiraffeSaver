@@ -1,3 +1,5 @@
+from Queue import PriorityQueue
+
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
@@ -35,9 +37,12 @@ if __name__ == "__main__":
     gus_patt = os.path.join(IMG_BASEPATH, 'pattern_gus.png')
 
     predict = gus_patt_predict
+    predict = os.path.join(IMG_BASEPATH, 'gus_photo_1.png')
     pattern = gus_patt
 
     matches, img = compute_matches(predict, pattern)
     print "We found %d matches!" % len(matches)
+    print "%d of them have 0 distance to Gus' pattern." % len([x for x in matches if x.distance == 0])
+    print min(matches, key=lambda x: x.distance).distance
 
     plt.imshow(img), plt.show()
