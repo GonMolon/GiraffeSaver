@@ -111,17 +111,17 @@ for y in [0, width - 1]:
             print("Node filtered")
 
 graph = nx.Graph()
-id = 0
+last_id = 0
 
 for x in range(height):
     for y in range(width):
         if im_bw[x, y] == BLACK and is_border(im_bw, (x, y)):
             box, outline = fill_color(im_bw, (x, y), GREY, only_border=True, compute_box=True)
             area = fill_color(im_bw, (x, y), GREY_MARKED)
-            node = Node(id, box.get_pos(), outline, area)
+            node = Node(last_id, box.get_pos(), outline, area)
             graph.add_node(node)
             print("New node found", node.id, "With area", node.area, "With outline", node.outline, "With pos", node.pos)
-            id += 1
+            last_id += 1
 
 for s in graph:
     for t in graph:
