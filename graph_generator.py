@@ -92,16 +92,25 @@ def add_edges(graph):
         for t in graph:
             if s.id != t.id:
                 dist = s.get_dist(t)
-                if queue.qsize() >= MAX_NEIGHBOURS and queue.queue[0][0] > dist:
+                if queue.qsize() >= MAX_NEIGHBOURS and queue.queue[0][0] < -dist:
                     queue.get()
                 if queue.qsize() < MAX_NEIGHBOURS:
-                    queue.put((dist, t))
+                    queue.put((-dist, t))
         while not queue.empty():
             t = queue.get()[1]
             graph.add_edge(s, t, weight=s.get_dist(t))
 
 
-def show_image():
+def show_image(img, graph):
+    for n in graph.nodes():
+        img = cv2.circle(img, n.pos[::-1], 10, 150, 3)
+
+    for e in graph.edges(data=True):
+        a = e[0]
+        b = e[1]
+        weight = e[2]["weight"]
+        img = cv2.line(img, a.pos[::-1], b.pos[::-1], 150, 1)
+
     cv2.imshow('graph', img)
     while True:
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -115,26 +124,17 @@ height = width = None
 
 def generate_graph(img_path):
     global img, height, width
-    img = cv2.imread(img_path, 0)
-    ret, img = cv2.threshold(img, 180, 255, cv2.THRESH_BINARY)
+    img_org = cv2.imread(img_path, 0)
+    ret, img = cv2.threshold(img_org, 180, 255, cv2.THRESH_BINARY)
     height, width = img.shape
 
     filter_nodes()
 
-    graph = nx.Graph()
+    graph = nx.DiGraph()
 
     add_nodes(graph)
     add_edges(graph)
 
-    for n in graph.nodes():
-        img = cv2.circle(img, n.pos[::-1], 10, 150, 3)
-
-    for e in graph.edges(data=True):
-        a = e[0]
-        b = e[1]
-        weight = e[2]["weight"]
-        img = cv2.line(img, a.pos[::-1], b.pos[::-1], 150, 1)
-
-    show_image()
+    show_image(img_org, graph)
 
     return graph
