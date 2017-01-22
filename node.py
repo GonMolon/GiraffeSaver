@@ -14,7 +14,7 @@ class Node:
         return math.sqrt(math.pow(x1 - x2, 2) + math.pow(y1 - y2, 2))
 
     def get_ratio(self, other):
-        ratios = [self.area/other.area, self.outline/other.outline]
+        ratios = [self.area/float(other.area), self.outline/float(other.outline)]
         mean_ratio = Node.__mean(ratios)
         variance_ratio = Node.__variance(mean_ratio, ratios)
         return mean_ratio, variance_ratio
