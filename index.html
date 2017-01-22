@@ -1,0 +1,52 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="areaselect/css/imgareaselect-default.css" />
+  <script type="text/javascript" src="areaselect/scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="areaselect/scripts/jquery.imgareaselect.pack.js"></script>
+</head>
+<body>
+    <label>Image File:</label><br/>
+
+    <canvas id="imageCanvas"></canvas>
+
+    <form method=POST enctype=multipart/form-data action="{{ url_for('upload') }}">
+        <input type="file" id="imageLoader" name="photo"/>
+    </form>
+
+<script>
+
+    $(document).ready(function () {
+
+        // Load selected image to canvas
+        var imageLoader = document.getElementById('imageLoader');
+        imageLoader.addEventListener('change', handleImage, false);
+        var canvas = document.getElementById('imageCanvas');
+        var ctx = canvas.getContext('2d');
+
+
+        function handleImage(e){
+            var reader = new FileReader();
+            reader.onload = function(event){
+                var img = new Image();
+                img.onload = function(){
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img,0,0);
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+        // Manage selection of an area of the image
+        $('#imageCanvas').imgAreaSelect({
+            handles: true,
+            onSelectEnd: function(img, selection) {
+                console.log('Selected '+ selection.x1 + ', ' + selection.y1)
+            }
+        });
+    });
+
+</script>
+</body>
+</html>
