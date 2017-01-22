@@ -10,6 +10,30 @@ class Node:
         self.area = area
 
 
+class Box:
+    def __init__(self):
+        self.minX = None
+        self.minY = None
+        self.maxX = None
+        self.maxY = None
+        self.init = False
+
+    def add_point(self, pixel):
+        x, y = pixel
+        if not self.init:
+            self.init = True
+            self.minX = self.maxX = x
+            self.minY = self.maxY = y
+        else:
+            if x < self.minX:
+                self.minX = x
+            if y < self.minY:
+                self.minY = y
+            if self.maxX < x:
+                self.maxX = x
+            if self.maxY < y:
+                self.maxY = y
+
 
 def is_border(im, pixel):
     (x, y) = pixel
@@ -23,15 +47,18 @@ def is_border(im, pixel):
     return False
 
 
-def fill_color(im, pixel, color, only_border=False):
+def fill_color(im, pixel, color, only_border=False, compute_box=False):
     total_pixels = 0
     im[pixel] = color
     queue = [pixel]
+    box = Box()
 
     while queue:
         (x, y) = queue[0]
         queue.pop(0)
         total_pixels += 1
+        if compute_box:
+            box.add_point((x, y))
         for dx in range(-1, 2):
             for dy in range(-1, 2):
                 if (dx != 0 or dy != 0) and (dx == 0 or dy == 0):
@@ -42,7 +69,11 @@ def fill_color(im, pixel, color, only_border=False):
                                 (not only_border or is_border(im, (x1, y1))):
                             im[x1, y1] = color
                             queue.append((x1, y1))
-    return (total_pixels)
+
+    if compute_box:
+        return box, total_pixels
+    else:
+        return total_pixels
 
 
 img = cv2.imread(sys.argv[1], 0)
@@ -75,10 +106,10 @@ id = 0
 for x in range(height):
     for y in range(width):
         if im_bw[x, y] == BLACK and is_border(im_bw, (x, y)):
-            outline = fill_color(im_bw, (x, y), GREY, only_border=True)
+            box, outline = fill_color(im_bw, (x, y), GREY, only_border=True, compute_box=True)
             area = fill_color(im_bw, (x, y), GREY_MARKED)
             graph.add_node(Node(id, outline, area))
-            print("New node found", id, "With area", area, "And outline", outline)
+            print("New node found", id, "With area", area, "With outline", outline, "With box", box)
             id += 1
 
 cv2.imwrite("./output.png", im_bw)
