@@ -109,9 +109,10 @@ def show_image(img, graph):
         a = e[0]
         b = e[1]
         weight = e[2]["weight"]
-        img = cv2.line(img, a.pos[::-1], b.pos[::-1], 150, 1)
+        img = cv2.line(img, a.pos[::-1], b.pos[::-1], 0, 2)
 
     cv2.imshow('graph', img)
+    cv2.imwrite("output.jpg", img)
     while True:
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -135,6 +136,6 @@ def generate_graph(img_path):
     add_nodes(graph)
     add_edges(graph)
 
-    show_image(img_org, graph)
+    # show_image(img_org, graph)
 
     return graph

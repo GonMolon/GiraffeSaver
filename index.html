@@ -1,51 +1,119 @@
 <html>
 <head>
-  <link rel="stylesheet" type="text/css" href="areaselect/css/imgareaselect-default.css" />
-  <script type="text/javascript" src="areaselect/scripts/jquery.min.js"></script>
-  <script type="text/javascript" src="areaselect/scripts/jquery.imgareaselect.pack.js"></script>
+    <link rel="stylesheet" type="text/css" href="areaselect/css/imgareaselect-default.css"/>
+    <script type="text/javascript" src="areaselect/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="areaselect/scripts/jquery.imgareaselect.pack.js"></script>
 </head>
 <body>
-    <label>Image File:</label><br/>
+<label>Image File:</label><br/>
 
-    <canvas id="imageCanvas"></canvas>
+<canvas id="canvas"></canvas>
 
-    <form method=POST enctype=multipart/form-data action="{{ url_for('upload') }}">
-        <input type="file" id="imageLoader" name="photo"/>
-    </form>
+<form name="form" id="form" method=POST enctype=multipart/form-data action="{{ url_for('submit_image_to_study') }}">
+    <input type = "file" name = "file" />
+    <input id="obj" type="hidden" name="obj[]">
+    <a href="javascript: submitform()">Submit</a>
+</form>
 
 <script>
+    if (!Array.prototype.last){
+        Array.prototype.last = function(){
+            return this[this.length - 1];
+        };
+    }
+    const RADIUS=20;
+    var points = [];
 
-    $(document).ready(function () {
+    BigCircle = function(ctx,x, y, color, circleSize) {
+        ctx.beginPath();
+        ctx.arc(x, y, circleSize, 0, Math.PI * 2, true);
+        ctx.fillStyle=color;
+        ctx.fill();
+        ctx.closePath();
+        this.clicked=function(){
+          ctx.fillStyle='#ff0000';
+          ctx.fill();
+        }
+    };
 
+    function submitform() {
+        $('#obj').val(JSON.stringify(points));
+        document.myform.submit();
+    }
+
+    function init() {
         // Load selected image to canvas
         var imageLoader = document.getElementById('imageLoader');
         imageLoader.addEventListener('change', handleImage, false);
-        var canvas = document.getElementById('imageCanvas');
+        var canvas = document.getElementsByTagName("canvas")[0];
         var ctx = canvas.getContext('2d');
 
 
-        function handleImage(e){
+        function handleImage(e) {
             var reader = new FileReader();
-            reader.onload = function(event){
+            reader.onload = function (event) {
                 var img = new Image();
-                img.onload = function(){
+                img.onload = function () {
                     canvas.width = img.width;
                     canvas.height = img.height;
-                    ctx.drawImage(img,0,0);
-                }
+                    ctx.drawImage(img, 0, 0);
+                };
                 img.src = event.target.result;
-            }
+            };
             reader.readAsDataURL(e.target.files[0]);
         }
 
-        // Manage selection of an area of the image
-        $('#imageCanvas').imgAreaSelect({
-            handles: true,
-            onSelectEnd: function(img, selection) {
-                console.log('Selected '+ selection.x1 + ', ' + selection.y1)
+        var initialPoint;
+
+        $('canvas').click(function (e) {
+            var x = e.clientX, y = e.clientY;
+            console.log("Clicked on image at " + x + ', ' + y);
+
+            var pointCoords = {'x': x-RADIUS/2, 'y': y-RADIUS/2};
+            BigCircle(ctx, x-RADIUS/2, y-RADIUS/2, '#5eb62b', RADIUS);
+            console.log(points.length);
+
+            if (points.length === 0) {
+                initialPoint = pointCoords;
+                console.log(initialPoint);
             }
-        });
+            else {
+                pre = points.last()
+                ctx.beginPath();
+                ctx.moveTo(pointCoords.x, pointCoords.y);
+                ctx.lineTo(pre.x, pre.y);
+                ctx.stroke();
+            }
+            points.push(pointCoords);
+
+            // Clicked the first element?
+            var x1 = initialPoint.x;
+            var y1 = initialPoint.y;
+            console.log(x1, y1);
+            console.log('You selected ' + points.length + ' points.')
+            if (points.length > 1 &&
+                (Math.pow(x - x1, 2) + Math.pow(y - y1, 2) < Math.pow(RADIUS, 2))) {
+                // Close polygon
+                console.log('Clicked the first point again!');
+                for (var i = 0; i < points.length; ++i) {
+                    var p = points[i];
+                    BigCircle(ctx, p.x, p.y, '#ff0000', RADIUS)
+                }
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        init();
     });
+
+    /**
+     * [] show lines between points
+     * [X] close polygon when clicking inside the first point again
+     * [] add button to undo
+     * [] how to send points in form
+     *
+     */
 
 </script>
 </body>
