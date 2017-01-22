@@ -11,7 +11,7 @@
 
 <form name="form" id="form" method=POST enctype=multipart/form-data action="{{ url_for('study_img') }}">
     <input type = "file" id="imageLoader" name="file"/>
-    <input id="obj" type="hidden" name="obj[]">
+    <input id="obj" type="hidden" name="obj">
     <a href="javascript: submitform()">Submit</a>
 </form>
 
@@ -38,7 +38,7 @@
 
     function submitform() {
         $('#obj').val(JSON.stringify(points));
-        document.myform.submit();
+        $('form').submit();
     }
 
     function init() {
