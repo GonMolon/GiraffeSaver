@@ -1,4 +1,5 @@
 import node
+from utils import RatioEvaluator
 
 
 def compare_graphs(graph1, graph2):
@@ -6,7 +7,9 @@ def compare_graphs(graph1, graph2):
     nodes2 = list(graph2.nodes())
 
     for n1 in nodes1:
+        ratios = RatioEvaluator()
         for n2 in nodes2:
-            ratio, variance = n1.get_ratio(n2)
-            if variance < 0.5:
-                print(ratio)
+            if not ratios.add_nodes(n1, n2):
+                break
+            else:
+                print(ratios.var)
