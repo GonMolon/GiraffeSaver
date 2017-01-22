@@ -11,9 +11,12 @@ def crop(img, path):
     cv2.fillPoly(mask, roi_corners, ignore_mask_color)
 
     # apply the mask
-    masked_image = cv2.bitwise_and(img, mask)
-    return masked_image
+    img = cv2.bitwise_and(img, mask)
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            if img[i][j][3] == 0: img[i][j] = [255,255,255,255]
 
+    return img
 
 def test():
     img = cv2.imread('test_images/pattern1.png', -1)
@@ -22,4 +25,6 @@ def test():
     img = crop(img, path)
 
     # save the result
-    cv2.imwrite('imgout.png', img)
+    cv2.imwrite('imgout.jpg', img)
+
+test()
