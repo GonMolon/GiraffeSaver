@@ -14,7 +14,7 @@ def crop(img, path):
     img = cv2.bitwise_and(img, mask)
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
-            if img[i][j][3] == 0: img[i][j] = [255,255,255,255]
+            if img[i][j][0] == 0 and img[i][j][1] == 0 and img[i][j][2] == 0: img[i][j] = [255,]*channel_count
 
     return img
 
