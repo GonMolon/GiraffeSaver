@@ -9,9 +9,10 @@
 
 <canvas id="canvas"></canvas>
 
-<form method=POST enctype=multipart/form-data action="{{ url_for('submit_image_to_study') }}">
+<form name="form" id="form" method=POST enctype=multipart/form-data action="{{ url_for('submit_image_to_study') }}">
     <input type = "file" name = "file" />
-    <input type = "submit"/>
+    <input id="obj" type="hidden" name="obj[]">
+    <a href="javascript: submitform()">Submit</a>
 </form>
 
 <script>
@@ -34,6 +35,11 @@
           ctx.fill();
         }
     };
+
+    function submitform() {
+        $('#obj').val(JSON.stringify(points));
+        document.myform.submit();
+    }
 
     function init() {
         // Load selected image to canvas
