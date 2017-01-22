@@ -2,13 +2,14 @@ import math
 
 
 class RatioEvaluator:
-
     def __init__(self):
         self.ratios = []
         self.total = 0.0
         self.var = None
 
     def mean(self):
+        if len(self.ratios) == 0:
+            return 0
         return self.total / len(self.ratios)
 
     def variance(self):
@@ -24,9 +25,11 @@ class RatioEvaluator:
         return self.var < 0.1
 
     def rollback(self):
-        size = len(self.ratios)
-        remove = self.ratios[size-2:size]
+        remove = self.ratios[-2:]
         self.total -= sum(remove)
-        self.ratios.remove(size-1)
-        self.ratios.remove(size-2)
-        self.var = self.variance()
+        del self.ratios[-2:]
+        if len(self.ratios) != 0:
+            self.var = self.variance()
+        else:
+            self.total = 0.0
+            self.var = None

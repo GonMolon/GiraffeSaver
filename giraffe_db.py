@@ -1,11 +1,11 @@
-import io
-import pickle
 import sys
+import pickle
+import io
+from Queue import PriorityQueue
 from os import listdir
 from os.path import isfile, join
-
-from graph_comparator import compare_graphs
 from graph_generator import generate_graph
+from graph_comparator import compare_graphs
 
 
 def store_giraffe(path, name):
