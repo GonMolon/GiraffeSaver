@@ -65,7 +65,7 @@ def compare_graphs(graph1, graph2):
     available2 = set(nodes2)
 
     global timeout
-    timeout = time.time() + 7
+    timeout = time.time() + 5
     compare_nodes(set(nodes1), set(nodes2))
 
     return max_level / float(max)
